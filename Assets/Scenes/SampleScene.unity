@@ -134,9 +134,9 @@ GameObject:
   - component: {fileID: 45017069}
   - component: {fileID: 45017068}
   - component: {fileID: 45017067}
-  - component: {fileID: 45017070}
   - component: {fileID: 45017071}
   - component: {fileID: 45017072}
+  - component: {fileID: 45017070}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -230,8 +230,8 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!70 &45017070
-CapsuleCollider2D:
+--- !u!61 &45017070
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -243,9 +243,19 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.051343918, y: -0.27980983}
-  m_Size: {x: 1.0972271, y: 1.3761642}
-  m_Direction: 0
+  m_Offset: {x: -0.04, y: -0.29}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 2.0625, y: 2}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1.05, y: 1.4}
+  m_EdgeRadius: 0
 --- !u!114 &45017071
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -260,6 +270,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mvoeSpeed: 200
   jumpForce: 250
+  maxJumpCount: 1
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  rayLineLength: 0.1
 --- !u!95 &45017072
 Animator:
   serializedVersion: 3
@@ -418,7 +433,7 @@ GameObject:
   - component: {fileID: 832563065}
   - component: {fileID: 832563064}
   - component: {fileID: 832563066}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Tilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1817,7 +1832,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &1563816384
 SpriteRenderer:
   m_ObjectHideFlags: 0
