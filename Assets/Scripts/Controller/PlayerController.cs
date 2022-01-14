@@ -146,10 +146,10 @@ public class PlayerController : MonoBehaviour
         Vector3 collisionSize = coll.bounds.size;
         // 基础位置
         Vector2 baseFootPos = transform.position.XY() + coll.offset - new Vector2(0, collisionSize.y / 2);
-        // 左脚位置
-        Vector2 leftFootPos = baseFootPos - new Vector2(collisionSize.x / 2, 0);
-        // 右脚位置
-        Vector2 rightFootPos = baseFootPos + new Vector2(collisionSize.x / 2, 0);
+        // 左脚位置 取1/3防止边缘接触墙面
+        Vector2 leftFootPos = baseFootPos - new Vector2(collisionSize.x / 3, 0);
+        // 右脚位置 取1/3防止边缘接触墙面
+        Vector2 rightFootPos = baseFootPos + new Vector2(collisionSize.x / 3, 0);
 
         // 左脚检测
         onGround |= Raycast(leftFootPos, Vector2.down, rayLineLength, groundLayer);
