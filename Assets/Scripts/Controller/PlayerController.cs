@@ -169,7 +169,7 @@ public class PlayerController : MonoBehaviour
     public static RaycastHit2D Raycast(Vector2 origin, Vector2 direction, float distance, int layerMask)
     {
         RaycastHit2D result = Physics2D.Raycast(origin, direction, distance, layerMask);
-        Debug.DrawRay(origin, direction, result? Color.red: Color.green, distance);
+        Debug.DrawRay(origin, direction * distance, result? Color.red: Color.green);
         return result;
     }
 }
