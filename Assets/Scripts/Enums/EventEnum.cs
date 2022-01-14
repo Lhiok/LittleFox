@@ -1,4 +1,4 @@
-public enum EventEnum
+public static class EventEnum
 {
-    Item_Get,
+    public static string Item_Get = "Item_Get";
 }

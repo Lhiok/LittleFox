@@ -4,36 +4,30 @@ using System;
 public static class EventUtil
 {
     // 事件发送器
-    private static EventSender<EventEnum, object> sender = new EventSender<EventEnum, object>();
+    private static EventSender sender = new EventSender();
 
     // 添加事件监听器
-    public static void AddListener(EventEnum eventType, Action<object> eventHandler)
+    public static void AddListener(string eventType, EventHandler<EventArgs> eventHandler)
     {
         sender.AddListener(eventType, eventHandler);
     }
 
     // 移除事件监听器
-    public static void RemoveListener(EventEnum eventType, Action<object> eventHandler)
+    public static void RemoveListener(string eventType, EventHandler<EventArgs> eventHandler)
     {
         sender.RemoveListener(eventType, eventHandler);
     }
 
     // 判断某类型监听器是否存在
-    public static bool HasListener(EventEnum eventType)
+    public static bool HasListener(string eventType)
     {
         return sender.HasListener(eventType);
     }
 
     // 派发事件
-    public static void Dispatch(EventEnum eventType)
+    public static void Dispatch(string eventType, params object[] eventArgs)
     {
-        sender.Dispatch(eventType, null);
-    }
-
-    // 派发事件
-    public static void Dispatch(EventEnum eventType, object eventArg)
-    {
-        sender.Dispatch(eventType, eventArg);
+        sender.Dispatch(eventType, eventArgs);
     }
 
     // 清除所有事件

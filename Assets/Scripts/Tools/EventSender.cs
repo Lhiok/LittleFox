@@ -1,58 +1,54 @@
 using System;
 using System.Collections.Generic;
 
-public class EventSender<TKey, TValue> {
+public class EventSender {
     // 事件表
-    private Dictionary<TKey, Action<TValue>> dict = new Dictionary<TKey, Action<TValue>>();
+    private Dictionary<string, EventListener> dict = new Dictionary<string, EventListener>();
 
     // 添加事件监听器
-    public void AddListener(TKey eventType, Action<TValue> eventHandler)
+    public void AddListener(string eventType, EventHandler<EventArgs> eventHandler)
     {
-        if (dict.TryGetValue(eventType, out Action<TValue> callbacks))
+        EventListener invoker;
+        if (!dict.TryGetValue(eventType, out invoker))
         {
-            dict[eventType] = callbacks + eventHandler;
+            invoker = new EventListener();
+            dict.Add(eventType, invoker);
         }
-        else
-        {
-            dict.Add(eventType, eventHandler);
-        }
+        invoker.handler += eventHandler;
     }
 
     // 移除事件监听器
-    public void RemoveListener(TKey eventType, Action<TValue> eventHandler)
+    public void RemoveListener(string eventType, EventHandler<EventArgs> eventHandler)
     {
-        if (dict.TryGetValue(eventType, out Action<TValue> callbacks))
+        if (dict.TryGetValue(eventType, out EventListener invoker))
         {
-            callbacks = (Action<TValue>) Delegate.RemoveAll(callbacks, eventHandler);
-            if (callbacks == null)
-            {
-                dict.Remove(eventType);
-            }
-            else
-            {
-                dict[eventType] = callbacks;
-            }
+            invoker.handler -= eventHandler;
         }
     }
 
     // 判断某类型监听器是否存在
-    public bool HasListener(TKey eventType)
+    public bool HasListener(string eventType)
     {
         return dict.ContainsKey(eventType);
     }
 
     // 派发事件
-    public void Dispatch(TKey eventType, TValue eventArg)
+    public void Dispatch(string eventType, params object[] eventArgs)
     {
-        if (dict.TryGetValue(eventType, out Action<TValue> callbacks))
+        if (dict.TryGetValue(eventType, out EventListener invoker))
         {
-            callbacks.Invoke(eventArg);
+            EventArgs args = new EventArgs(eventType, eventArgs);
+            invoker.Invoke(args);
         }
     }
 
     // 清除所有事件
     public void Clear()
     {
+        foreach (EventListener invoker in dict.Values)
+        {
+            invoker.Clear();
+        }
         dict.Clear();
     }
 }
