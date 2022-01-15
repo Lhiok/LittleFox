@@ -4,5 +4,6 @@ using System;
 public enum ItemEnum
 {
     None,
-    Cherry,
+    Cherry, // 樱桃
+    Frog,   // 青蛙
 }

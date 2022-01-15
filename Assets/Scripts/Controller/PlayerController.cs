@@ -5,7 +5,8 @@ using VectorExtensions;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("移动参数")]
+    [Header("参数")]
+    public int hp;  // 血量
     public float mvoeSpeed; // 移速
     public float jumpForce; // 跳跃力
     public int maxJumpCount;    // 多段跳次数
@@ -17,6 +18,10 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;     // 刚体组件
     private Animator animator;  // 动画组件
     private Collider2D coll;    // 碰撞组件
+
+    private int curHp;  // 剩余血量
+    private bool wJump; // 记录跳跃键状态在下一逻辑帧更新
+    private int jumpCount;  // 剩余跳跃次数
 
     // Start is called before the first frame update
     void Start()
@@ -42,10 +47,61 @@ public class PlayerController : MonoBehaviour
         {
             Debug.LogError("获取碰撞组件失败");
         }
+
+        // 参数初始化
+        curHp = hp;
+        wJump = false;
+        jumpCount = maxJumpCount;
+
+        // UI初始化
+        EventUtil.Dispatch(EventEnum.Update_Hp, curHp);
+
+        // 绑定事件
+        EventUtil.AddListener(EventEnum.Player_Bounce, Bounce);
+        EventUtil.AddListener(EventEnum.Player_Hurt, Hurt);
+    }
+    
+    // 被弹飞
+    private void Bounce(EventArgs eventArgs)
+    {
+        Vector2 force = (Vector2) eventArgs.args[0];
+
+        // 受伤状态无法弹飞
+        if (animator.GetBool("Hurt") || force == null)
+        {
+            return;
+        }
+
+        rb.AddForce(force);
+        animator.SetBool("bJump", true);
+        animator.SetBool("bFall", false);
     }
 
-    private bool wJump = false; // 记录跳跃键状态在下一逻辑帧更新
-    private int jumpCount = 0;  // 剩余跳跃次数
+    // 受伤
+    private void Hurt(EventArgs eventArgs)
+    {
+        int damage = (int) eventArgs.args[0];
+        Vector2 force = (Vector2) eventArgs.args[1];
+
+        curHp = Mathf.Max(0, curHp - damage);
+        EventUtil.Dispatch(EventEnum.Update_Hp, curHp);
+
+        // 角色死亡
+        if (curHp == 0)
+        {
+            animator.SetBool("Die", true);
+            EventUtil.Dispatch(EventEnum.Player_Die);
+            return;
+        }
+
+        animator.SetBool("Hurt", true);
+
+        // 有受力方向
+        if (force != null)
+        {
+            rb.AddForce(force);
+        }
+    }
 
     // Update is called once per frame
     void Update()
@@ -116,6 +172,16 @@ public class PlayerController : MonoBehaviour
     // 切换动画
     private void UpdateAnim()
     {
+        // 受伤切待机
+        if (animator.GetBool("Hurt"))
+        {
+            if (Mathf.Abs(rb.velocity.x) < 0.01f && Mathf.Abs(rb.velocity.y) < 0.01f)
+            {
+                animator.SetBool("Hurt", false);
+                rb.velocity = new Vector2(0, 0);
+            }
+        }
+
         // 移动
         animator.SetFloat("speed", Mathf.Abs(rb.velocity.x));
 
@@ -123,6 +189,7 @@ public class PlayerController : MonoBehaviour
         if (rb.velocity.y > 0)
         {
             animator.SetBool("bJump", true);
+            animator.SetBool("bFall", false);
         }
         // 下落
         else if (!IsOnGround() && rb.velocity.y < 0)
@@ -162,6 +229,11 @@ public class PlayerController : MonoBehaviour
     // 能否移动
     public bool Moveable() 
     {
+        if (animator.GetBool("Die") || animator.GetBool("Hurt"))
+        {
+            return false;
+        }
+
         return true;
     }
 
