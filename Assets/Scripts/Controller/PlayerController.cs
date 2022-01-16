@@ -17,7 +17,8 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;     // 刚体组件
     private Animator animator;  // 动画组件
-    private Collider2D coll;    // 碰撞组件
+    private BoxCollider2D topColl; // 顶部碰撞组件
+    private CircleCollider2D buttonColl;    // 底部碰撞组件
 
     private int curHp;  // 剩余血量
     private bool wJump; // 记录跳跃键状态在下一逻辑帧更新
@@ -31,7 +32,8 @@ public class PlayerController : MonoBehaviour
         // 获取动画组件
         animator = GetComponentInParent<Animator>();
         // 获取碰撞组件
-        coll = GetComponentInParent<Collider2D>();
+        topColl = GetComponentInParent<BoxCollider2D>();
+        buttonColl = GetComponentInParent<CircleCollider2D>();
 
         if (!rb)
         {
@@ -43,7 +45,7 @@ public class PlayerController : MonoBehaviour
             Debug.LogError("获取动画组件失败");
         }
         
-        if (!coll)
+        if (!topColl || !buttonColl)
         {
             Debug.LogError("获取碰撞组件失败");
         }
@@ -90,6 +92,9 @@ public class PlayerController : MonoBehaviour
         if (curHp == 0)
         {
             animator.SetBool("Die", true);
+            rb.AddForce(new Vector2(0, 200));
+            topColl.isTrigger = true;
+            buttonColl.isTrigger = true;
             EventUtil.Dispatch(EventEnum.Player_Die);
             return;
         }
@@ -185,17 +190,20 @@ public class PlayerController : MonoBehaviour
         // 移动
         animator.SetFloat("speed", Mathf.Abs(rb.velocity.x));
 
-        // 起跳
-        if (rb.velocity.y > 0)
+        if (!IsOnGround())
         {
-            animator.SetBool("bJump", true);
-            animator.SetBool("bFall", false);
-        }
-        // 下落
-        else if (!IsOnGround() && rb.velocity.y < 0)
-        {
-            animator.SetBool("bFall", true);
-            animator.SetBool("bJump", false);
+            // 起跳
+            if (rb.velocity.y > 0)
+            {
+                animator.SetBool("bJump", true);
+                animator.SetBool("bFall", false);
+            }
+            // 下落
+            else if (rb.velocity.y < 0)
+            {
+                animator.SetBool("bFall", true);
+                animator.SetBool("bJump", false);
+            }
         }
         // 落地/悬浮
         else
@@ -203,20 +211,57 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("bJump", false);
             animator.SetBool("bFall", false);
         }
+
+        bool wCrouch = Input.GetButton("Crouch");
+        bool bCrouch = animator.GetBool("bCrouch");
+
+        // 下蹲
+        if (wCrouch && !bCrouch)
+        {
+            topColl.isTrigger = true;
+            animator.SetBool("bCrouch", true);
+        }
+        // 起立
+        else if (!wCrouch && bCrouch)
+        {
+            // 可以站起
+            if (canStand())
+            {
+                topColl.isTrigger = false;
+                animator.SetBool("bCrouch", false);
+            }
+        }
+    }
+
+    private bool canStand()
+    {
+        bool cannotStand = false;
+
+        // 基础位置
+        Vector2 baseHeadPos = transform.position.XY() + buttonColl.offset + new Vector2(0, topColl.size.y);
+        // 左脚位置
+        Vector2 leftHeadPos = baseHeadPos - new Vector2(topColl.size.x / 2, 0);
+        // 右脚位置
+        Vector2 rightHeadPos = baseHeadPos + new Vector2(topColl.size.x / 2, 0);
+
+        // 左脚检测
+        cannotStand |= Raycast(leftHeadPos, Vector2.up, rayLineLength, groundLayer);
+        // 右脚检测
+        cannotStand |= Raycast(rightHeadPos, Vector2.up, rayLineLength, groundLayer);
+        
+        return !cannotStand;
     }
 
     public bool IsOnGround()
     {
         bool onGround = false;
 
-        // 碰撞组件大小
-        Vector3 collisionSize = coll.bounds.size;
         // 基础位置
-        Vector2 baseFootPos = transform.position.XY() + coll.offset - new Vector2(0, collisionSize.y / 2);
-        // 左脚位置 取1/3防止边缘接触墙面
-        Vector2 leftFootPos = baseFootPos - new Vector2(collisionSize.x / 3, 0);
-        // 右脚位置 取1/3防止边缘接触墙面
-        Vector2 rightFootPos = baseFootPos + new Vector2(collisionSize.x / 3, 0);
+        Vector2 baseFootPos = transform.position.XY() + buttonColl.offset - new Vector2(0, buttonColl.radius);
+        // 左脚位置
+        Vector2 leftFootPos = baseFootPos - new Vector2(buttonColl.radius, 0);
+        // 右脚位置
+        Vector2 rightFootPos = baseFootPos + new Vector2(buttonColl.radius, 0);
 
         // 左脚检测
         onGround |= Raycast(leftFootPos, Vector2.down, rayLineLength, groundLayer);
