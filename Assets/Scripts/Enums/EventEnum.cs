@@ -6,4 +6,5 @@ public static class EventEnum
     public static string Player_Hurt = "Player_Hurt";
     public static string Player_Die = "Player_Die";
     public static string Player_Bounce = "Player_Bounce";
+    public static string Fx_Play_Once = "Fx_Play_Once";
 }

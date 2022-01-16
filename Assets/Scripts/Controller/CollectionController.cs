@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class CollectionController : MonoBehaviour
 {
-    [Header("物品名称")]
+    [Header("物品属性")]
     public ItemEnum itemName;
+
+    [Header("特效")]
+    public GameObject fxItemGet; 
 
     // Start is called before the first frame update
     void Start()
@@ -32,6 +35,7 @@ public class CollectionController : MonoBehaviour
             Destroy(this.gameObject);
             // 派发事件
             EventUtil.Dispatch(EventEnum.Item_Get, itemName);
+            EventUtil.Dispatch(EventEnum.Fx_Play_Once, fxItemGet, transform);
         }
     }
 }

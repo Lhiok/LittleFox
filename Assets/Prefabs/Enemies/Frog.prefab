@@ -167,3 +167,4 @@ MonoBehaviour:
   hp: 2
   atk: 1
   bounceForce: 300
+  fxEnemyDeath: {fileID: 418784573702176838, guid: 409ca068c39d9ac48a4591c9cd4c160d, type: 3}

@@ -10,6 +10,9 @@ public class EnemyController : MonoBehaviour
     public int atk; // 攻击力
     public float bounceForce;   // 击飞力
 
+    [Header("特效")]
+    public GameObject fxEnemyDeath; 
+
     private int curHp;  // 剩余血量
 
     // Start is called before the first frame update
@@ -42,6 +45,7 @@ public class EnemyController : MonoBehaviour
                 {
                     Destroy(this.gameObject);
                     EventUtil.Dispatch(EventEnum.Kill_Enemy, ItemEnum.Frog);
+                    EventUtil.Dispatch(EventEnum.Fx_Play_Once, fxEnemyDeath, transform);
                 }
                 return;
             }
