@@ -13,7 +13,12 @@ public class PlayerController : MonoBehaviour
 
     [Header("检测辅助")]
     public LayerMask groundLayer;   // 地面
-    public float rayLineLength; // 检测线长度
+
+    [Header("音效")]
+    public AudioSource jumpAudio;   // 跳跃音效
+    public AudioSource hurtAudio;   // 受伤音效
+    public AudioSource dieAudio;    // 死亡音效
+    public AudioSource bounceAudio; // 弹飞音效
 
     private Rigidbody2D rb;     // 刚体组件
     private Animator animator;  // 动画组件
@@ -77,6 +82,9 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(force);
         animator.SetBool("bJump", true);
         animator.SetBool("bFall", false);
+
+        // 播放音效
+        bounceAudio.Play();
     }
 
     // 受伤
@@ -96,10 +104,16 @@ public class PlayerController : MonoBehaviour
             topColl.isTrigger = true;
             buttonColl.isTrigger = true;
             EventUtil.Dispatch(EventEnum.Player_Die);
+
+            // 播放音效
+            dieAudio.Play();
             return;
         }
 
         animator.SetBool("Hurt", true);
+
+        // 播放音效
+        hurtAudio.Play();
 
         // 有受力方向
         if (force != null)
@@ -159,7 +173,9 @@ public class PlayerController : MonoBehaviour
             // 重置wJump
             wJump = false;
             --jumpCount;
-            verticalSpeed = jumpForce * Time.fixedDeltaTime;
+            verticalSpeed = jumpForce;
+            // 播放音效
+            jumpAudio.Play();
         }
 
         rb.velocity = new Vector2(horizontalSpeed, verticalSpeed);
@@ -168,9 +184,9 @@ public class PlayerController : MonoBehaviour
         if (horizontalMove != 0)
         {
             Vector3 scale = rb.transform.localScale;
-            float scaleX = horizontalMove * Mathf.Abs(scale.x);
+            scale.x = horizontalMove * Mathf.Abs(scale.x);
 
-            rb.transform.localScale = new Vector3(scaleX, scale.y, scale.z);
+            rb.transform.localScale = scale;
         }
     }
 
@@ -218,7 +234,7 @@ public class PlayerController : MonoBehaviour
         // 下蹲
         if (wCrouch && !bCrouch)
         {
-            topColl.isTrigger = true;
+            topColl.enabled = false;
             animator.SetBool("bCrouch", true);
         }
         // 起立
@@ -227,7 +243,7 @@ public class PlayerController : MonoBehaviour
             // 可以站起
             if (canStand())
             {
-                topColl.isTrigger = false;
+                topColl.enabled = true;
                 animator.SetBool("bCrouch", false);
             }
         }
@@ -245,9 +261,9 @@ public class PlayerController : MonoBehaviour
         Vector2 rightHeadPos = baseHeadPos + new Vector2(topColl.size.x / 2, 0);
 
         // 左脚检测
-        cannotStand |= Raycast(leftHeadPos, Vector2.up, rayLineLength, groundLayer);
+        cannotStand |= RaycastUtil.Raycast(leftHeadPos, Vector2.up, groundLayer);
         // 右脚检测
-        cannotStand |= Raycast(rightHeadPos, Vector2.up, rayLineLength, groundLayer);
+        cannotStand |= RaycastUtil.Raycast(rightHeadPos, Vector2.up, groundLayer);
         
         return !cannotStand;
     }
@@ -264,9 +280,9 @@ public class PlayerController : MonoBehaviour
         Vector2 rightFootPos = baseFootPos + new Vector2(buttonColl.radius, 0);
 
         // 左脚检测
-        onGround |= Raycast(leftFootPos, Vector2.down, rayLineLength, groundLayer);
+        onGround |= RaycastUtil.Raycast(leftFootPos, Vector2.down, groundLayer);
         // 右脚检测
-        onGround |= Raycast(rightFootPos, Vector2.down, rayLineLength, groundLayer);
+        onGround |= RaycastUtil.Raycast(rightFootPos, Vector2.down, groundLayer);
         
         return onGround;
     }
@@ -280,13 +296,5 @@ public class PlayerController : MonoBehaviour
         }
 
         return true;
-    }
-
-    // 重载Raycast方法
-    public static RaycastHit2D Raycast(Vector2 origin, Vector2 direction, float distance, int layerMask)
-    {
-        RaycastHit2D result = Physics2D.Raycast(origin, direction, distance, layerMask);
-        Debug.DrawRay(origin, direction * distance, result? Color.red: Color.green);
-        return result;
     }
 }

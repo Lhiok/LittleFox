@@ -7,6 +7,8 @@ TagManager:
   - Collection
   - Enemy
   - Fx
+  - LeftBorder
+  - RightBorder
   layers:
   - Default
   - TransparentFX
