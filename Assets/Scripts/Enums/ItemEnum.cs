@@ -6,4 +6,5 @@ public enum ItemEnum
     None,
     Cherry, // 樱桃
     Frog,   // 青蛙
+    Gem,    // 钻石
 }
