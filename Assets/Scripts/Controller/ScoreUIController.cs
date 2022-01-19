@@ -27,10 +27,18 @@ public class ScoreUIController : MonoBehaviour
         // 初始化得分规则
         dict.Add(ItemEnum.Cherry, 1);
         dict.Add(ItemEnum.Frog, 2);
+        dict.Add(ItemEnum.Gem, 3);
+        dict.Add(ItemEnum.Eagle, 1);
 
         // 绑定事件
         EventUtil.AddListener(EventEnum.Item_Get, Score);
         EventUtil.AddListener(EventEnum.Kill_Enemy, Score);
+    }
+
+    private void OnDestroy() {
+        // 解绑事件
+        EventUtil.RemoveListener(EventEnum.Item_Get, Score);
+        EventUtil.RemoveListener(EventEnum.Kill_Enemy, Score);
     }
 
     private void Score(EventArgs eventArgs)

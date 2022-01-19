@@ -11,6 +11,11 @@ public class FxController : MonoBehaviour
         EventUtil.AddListener(EventEnum.Fx_Play_Once, FxPlayOnce);
     }
 
+    private void OnDestroy() {
+        // 解绑事件
+        EventUtil.RemoveListener(EventEnum.Fx_Play_Once, FxPlayOnce);
+    }
+
     private void FxPlayOnce(EventArgs eventArgs)
     {
         GameObject prefab = (GameObject) eventArgs.args[0];

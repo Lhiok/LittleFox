@@ -13,6 +13,10 @@ public class HPUIController : MonoBehaviour
         // 绑定事件
         EventUtil.AddListener(EventEnum.Update_Hp, UpdateUI);
     }
+    private void OnDestroy() {
+        // 解绑事件
+        EventUtil.RemoveListener(EventEnum.Update_Hp, UpdateUI);
+    }
 
     private void UpdateUI(EventArgs eventArgs)
     {

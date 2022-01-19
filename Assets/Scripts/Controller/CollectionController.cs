@@ -11,23 +11,7 @@ public class CollectionController : MonoBehaviour
     [Header("特效")]
     public GameObject fxItemGet; 
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    /// <summary>
-    /// Sent when another object enters a trigger collider attached to this
-    /// object (2D physics only).
-    /// </summary>
-    /// <param name="other">The other Collider2D involved in this collision.</param>
+    // Sent when another object enters a trigger collider attached to this object (2D physics only).
     void OnTriggerEnter2D(Collider2D other)
     {
         // 玩家触碰到可收集物

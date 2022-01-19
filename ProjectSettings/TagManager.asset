@@ -9,6 +9,8 @@ TagManager:
   - Fx
   - LeftBorder
   - RightBorder
+  - TopBorder
+  - BottomBorder
   layers:
   - Default
   - TransparentFX

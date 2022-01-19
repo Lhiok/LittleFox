@@ -67,6 +67,12 @@ public class PlayerController : MonoBehaviour
         EventUtil.AddListener(EventEnum.Player_Bounce, Bounce);
         EventUtil.AddListener(EventEnum.Player_Hurt, Hurt);
     }
+
+    private void OnDestroy() {
+        // 解绑事件
+        EventUtil.RemoveListener(EventEnum.Player_Bounce, Bounce);
+        EventUtil.RemoveListener(EventEnum.Player_Hurt, Hurt);
+    }
     
     // 被弹飞
     private void Bounce(EventArgs eventArgs)

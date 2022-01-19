@@ -42,8 +42,8 @@ GameObject:
   - component: {fileID: 1410557880362708218}
   - component: {fileID: 1410557880362708220}
   - component: {fileID: 1410557880362708221}
-  - component: {fileID: 1410557880362708217}
   - component: {fileID: 1142563106846618465}
+  - component: {fileID: 1410557880686123985}
   m_Layer: 0
   m_Name: Frog
   m_TagString: Enemy
@@ -138,7 +138,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!95 &1410557880362708221
 Animator:
   serializedVersion: 3
@@ -158,28 +158,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &1410557880362708217
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1410557880362708223}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1ab5272e2f200042aa8b5a53b579230, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hp: 2
-  atk: 1
-  bounceForce: 300
-  jumpProbability: 50
-  jumpForceX: 1
-  jumpForceY: 5
-  fxEnemyDeath: {fileID: 418784573702176838, guid: 409ca068c39d9ac48a4591c9cd4c160d, type: 3}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
 --- !u!70 &1142563106846618465
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -196,6 +174,29 @@ CapsuleCollider2D:
   m_Offset: {x: -0.026816742, y: -0.10726584}
   m_Size: {x: 1.5171032, y: 1.1418941}
   m_Direction: 1
+--- !u!114 &1410557880686123985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1410557880362708223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 198e8406a23b336448d9ba314fc06ded, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 2
+  hp: 2
+  atk: 1
+  bounceForce: 300
+  fxEnemyDeath: {fileID: 418784573702176838, guid: 409ca068c39d9ac48a4591c9cd4c160d, type: 3}
+  jumpProbability: 60
+  jumpForceX: 2
+  jumpForceY: 5
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &1880875811653053701
 GameObject:
   m_ObjectHideFlags: 0
